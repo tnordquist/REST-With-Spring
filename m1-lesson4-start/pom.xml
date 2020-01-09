@@ -60,7 +60,7 @@
 							<exclude>**/*LiveTest.java</exclude>
 						</excludes>
 						<systemPropertyVariables>
-							<!-- <provPersistenceTarget>h2</provPersistenceTarget> -->
+							 <provPersistenceTarget>mysql</provPersistenceTarget>
 						</systemPropertyVariables>
 					</configuration>
 				</plugin>
