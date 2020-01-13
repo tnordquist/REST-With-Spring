@@ -13,6 +13,8 @@ import javax.persistence.ManyToMany;
 import com.baeldung.common.interfaces.INameableDto;
 import com.baeldung.common.persistence.model.INameableEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 @Entity
 public class Privilege implements INameableEntity, INameableDto {
@@ -23,6 +25,8 @@ public class Privilege implements INameableEntity, INameableDto {
     private Long id;
 
     @Column(unique = true, nullable = false)
+    @NotNull
+    @Size(min = 2, max = 30)
     private String name;
 
     @Column(unique = false, nullable = false)
