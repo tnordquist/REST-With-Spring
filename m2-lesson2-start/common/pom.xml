@@ -41,6 +41,13 @@
 			<version>${tomcat.version}</version>
 			<scope>provided</scope>
 		</dependency>
+
+		<!-- validation -->
+
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-validator</artifactId>
+		</dependency>
 		
 		<!-- marshalling -->
 
