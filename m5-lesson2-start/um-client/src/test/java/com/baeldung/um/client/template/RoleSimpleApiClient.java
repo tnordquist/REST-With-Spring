@@ -1,5 +1,6 @@
 package com.baeldung.um.client.template;
 
+import com.google.common.base.Preconditions;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import org.apache.commons.lang3.tuple.ImmutablePair;
@@ -29,6 +30,8 @@ public final class RoleSimpleApiClient {
 
     // find - one
     public final Role findOne(final long id) {
+        final Response findOneResponse = findOneAsResponse(id);
+        Preconditions.checkState(findOneResponse.getStatusCode()==200, "Find One operation didn't result in a 200 OK");
         return findOneAsResponse(id).as(Role.class);
     }
 
