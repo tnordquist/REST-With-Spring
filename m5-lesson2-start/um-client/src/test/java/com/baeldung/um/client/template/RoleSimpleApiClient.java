@@ -3,6 +3,7 @@ package com.baeldung.um.client.template;
 import com.google.common.base.Preconditions;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
+import java.util.List;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +38,11 @@ public final class RoleSimpleApiClient {
 
     public final Response findOneAsResponse(final long id) {
         return givenAuthenticated().accept(JSON).get(getUri() + "/" + id);
+    }
+
+    @SuppressWarnings("unchecked")
+    public final List<Role> findAll() {
+        return givenAuthenticated().accept(JSON).get(getUri()).as(List.class);
     }
 
     // UTIL
