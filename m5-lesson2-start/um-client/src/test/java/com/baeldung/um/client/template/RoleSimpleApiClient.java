@@ -61,6 +61,19 @@ public final class RoleSimpleApiClient {
     return read(locationOfNewResource).as(Role.class);
   }
 
+  public final Response updateAsResponse(final Role role) {
+    return givenAuthenticated().contentType(JSON).body(role).put(getUri() + "/" + role.getId());
+  }
+
+  public final Role update(final Role role) {
+    updateAsResponse(role);
+    return read(getUri()+ "/" + role.getId()).as(Role.class);
+  }
+
+  public final Response deleteAsResponse(final long id) {
+    return givenAuthenticated().delete(getUri() + "/" + id);
+  }
+
   // UTIL
 
   private final Response read(final String uri) {
