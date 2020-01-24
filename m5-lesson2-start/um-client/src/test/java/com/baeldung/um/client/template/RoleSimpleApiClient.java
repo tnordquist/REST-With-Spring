@@ -1,6 +1,7 @@
 package com.baeldung.um.client.template;
 
 import io.restassured.http.ContentType;
+import io.restassured.response.Response;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,8 +28,12 @@ public final class RoleSimpleApiClient {
     // API
 
     // find - one
-    public Role findOne(final long id) {
-        return givenAuthenticated().accept(JSON).get(getUri() + "/" + id).as(Role.class);
+    public final Role findOne(final long id) {
+        return findOneAsResponse(id).as(Role.class);
+    }
+
+    public final Response findOneAsResponse(final long id) {
+        return givenAuthenticated().accept(JSON).get(getUri() + "/" + id);
     }
 
     // UTIL
