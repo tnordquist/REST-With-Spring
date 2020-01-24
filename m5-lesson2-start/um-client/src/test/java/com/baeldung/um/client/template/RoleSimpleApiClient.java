@@ -1,7 +1,6 @@
 package com.baeldung.um.client.template;
 
 import com.google.common.base.Preconditions;
-import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import java.util.List;
 import org.apache.commons.lang3.tuple.ImmutablePair;
@@ -22,42 +21,48 @@ import io.restassured.specification.RequestSpecification;
 @Profile(Profiles.CLIENT)
 public final class RoleSimpleApiClient {
 
-    private final static String JSON = MediaType.APPLICATION_JSON.toString();
+  private final static String JSON = MediaType.APPLICATION_JSON.toString();
 
-    @Autowired
-    protected UmPaths paths;
+  @Autowired
+  protected UmPaths paths;
 
-    // API
+  // API
 
-    // find - one
-    public final Role findOne(final long id) {
-        final Response findOneResponse = findOneAsResponse(id);
-        Preconditions.checkState(findOneResponse.getStatusCode()==200, "Find One operation didn't result in a 200 OK");
-        return findOneAsResponse(id).as(Role.class);
-    }
+  // find - one
+  public final Role findOne(final long id) {
+    final Response findOneResponse = findOneAsResponse(id);
+    Preconditions.checkState(findOneResponse.getStatusCode() == 200,
+        "Find One operation didn't result in a 200 OK");
+    return findOneAsResponse(id).as(Role.class);
+  }
 
-    public final Response findOneAsResponse(final long id) {
-        return givenAuthenticated().accept(JSON).get(getUri() + "/" + id);
-    }
+  public final Response findOneAsResponse(final long id) {
+    return read(getUri() + "/" + id);
+  }
 
-    @SuppressWarnings("unchecked")
-    public final List<Role> findAll() {
-        return givenAuthenticated().accept(JSON).get(getUri()).as(List.class);
-    }
+  @SuppressWarnings("unchecked")
+  public final List<Role> findAll() {
+    return read(getUri()).as(List.class);
+  }
 
-    // UTIL
+  // UTIL
 
-    public final String getUri() {
-        return paths.getRoleUri();
-    }
+  private final Response read(final String uri) {
+    return givenAuthenticated().accept(JSON).get(uri);
+  }
 
-    public final RequestSpecification givenAuthenticated() {
-        final Pair<String, String> credentials = getDefaultCredentials();
-        return RestAssured.given().auth().preemptive().basic(credentials.getLeft(), credentials.getRight());
-    }
+  public final String getUri() {
+    return paths.getRoleUri();
+  }
 
-    private final Pair<String, String> getDefaultCredentials() {
-        return new ImmutablePair<>(Um.ADMIN_EMAIL, Um.ADMIN_PASS);
-    }
+  public final RequestSpecification givenAuthenticated() {
+    final Pair<String, String> credentials = getDefaultCredentials();
+    return RestAssured.given().auth().preemptive()
+        .basic(credentials.getLeft(), credentials.getRight());
+  }
+
+  private final Pair<String, String> getDefaultCredentials() {
+    return new ImmutablePair<>(Um.ADMIN_EMAIL, Um.ADMIN_PASS);
+  }
 
 }
