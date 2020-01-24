@@ -1,6 +1,7 @@
 package com.baeldung.um.client.template;
 
 import com.google.common.base.Preconditions;
+import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import java.util.List;
 import org.apache.commons.lang3.tuple.ImmutablePair;
@@ -43,6 +44,14 @@ public final class RoleSimpleApiClient {
   @SuppressWarnings("unchecked")
   public final List<Role> findAll() {
     return read(getUri()).as(List.class);
+  }
+
+  public final Response findAllAsResponse() {
+      return read(getUri());
+  }
+
+  public final Response createAsResponse(final Role role) {
+      return givenAuthenticated().contentType(JSON).body(role).post(getUri());
   }
 
   // UTIL
