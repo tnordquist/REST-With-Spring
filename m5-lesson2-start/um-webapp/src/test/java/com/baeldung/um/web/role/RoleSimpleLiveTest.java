@@ -2,15 +2,21 @@ package com.baeldung.um.web.role;
 
 import static com.baeldung.common.spring.util.Profiles.CLIENT;
 import static com.baeldung.common.spring.util.Profiles.TEST;
+import static net.bytebuddy.matcher.ElementMatchers.is;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
 
+import com.baeldung.test.common.util.IDUtil;
+import io.restassured.response.Response;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.AnnotationConfigContextLoader;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import com.baeldung.common.web.WebConstants;
 import com.baeldung.um.client.template.RoleSimpleApiClient;
@@ -33,7 +39,7 @@ public class RoleSimpleLiveTest {
 
     // find - one
 
-    /* @Test
+     @Test
     public final void whenNonExistingResourceIsRetrieved_then404IsReceived() {
         final Response response = getApi().findOneAsResponse(IDUtil.randomPositiveLong());
     
@@ -52,7 +58,8 @@ public class RoleSimpleLiveTest {
     @Test
     public final void givenResourceForIdExists_whenResourceOfThatIdIsRetrieved_then200IsRetrieved() {
         // Given
-        final String uriForResourseCreation = getApi().createAsResponse(createNewResource()).getHeader(HttpHeaders.LOCATION);
+        final String uriForResourseCreation = getApi().createAsResponse(createNewResource()).getHeader(
+            HttpHeaders.LOCATION);
         
         //when
         final Response response = getApi().read(uriForResourseCreation);
@@ -69,7 +76,7 @@ public class RoleSimpleLiveTest {
     
         // Then
         assertEquals(createdResource, newResource);
-    }*/
+    }
 
     // UTIL
 
