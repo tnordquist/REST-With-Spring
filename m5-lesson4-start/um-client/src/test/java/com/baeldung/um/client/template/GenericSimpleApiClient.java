@@ -1,6 +1,7 @@
 package com.baeldung.um.client.template;
 
 import com.baeldung.client.marshall.IMarshaller;
+import com.baeldung.common.interfaces.IDto;
 import com.baeldung.common.spring.util.Profiles;
 import com.baeldung.common.util.QueryConstants;
 import com.baeldung.common.web.WebConstants;
@@ -22,7 +23,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Profile(Profiles.CLIENT)
-public abstract class GenericSimpleApiClient<T> {
+public abstract class GenericSimpleApiClient<T extends IDto> {
 
     private final static String JSON = MediaType.APPLICATION_JSON.toString();
 
@@ -220,9 +221,7 @@ public abstract class GenericSimpleApiClient<T> {
 
     // API - other
 
-    public final String getUri() {
-        return paths.getRoleUri();
-    }
+    public abstract String getUri();
 
     public final RequestSpecification givenAuthenticated() {
         final Pair<String, String> credentials = getDefaultCredentials();
