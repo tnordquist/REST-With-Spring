@@ -3,14 +3,13 @@ package com.baeldung.um.web.role;
 import static com.baeldung.common.spring.util.Profiles.CLIENT;
 import static com.baeldung.common.spring.util.Profiles.TEST;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
+import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
+import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 import java.util.Collection;
-
-import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
-import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 
 import org.apache.http.HttpHeaders;
 import org.hamcrest.core.StringContains;
@@ -24,27 +23,27 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.AnnotationConfigContextLoader;
 
+import com.baeldung.common.interfaces.IDto;
+import com.baeldung.common.interfaces.INameableDto;
 import com.baeldung.common.util.SearchField;
 import com.baeldung.common.web.WebConstants;
 import com.baeldung.test.common.util.IDUtil;
-import com.baeldung.um.client.template.RoleSimpleApiClient;
+import com.baeldung.um.client.template.GenericSimpleApiClient;
 import com.baeldung.um.persistence.model.Privilege;
-import com.baeldung.um.persistence.model.Role;
 import com.baeldung.um.spring.CommonTestConfig;
 import com.baeldung.um.spring.UmClientConfig;
 import com.baeldung.um.spring.UmLiveTestConfig;
-import com.google.common.collect.Sets;
 import io.restassured.response.Response;
 
 @ActiveProfiles({ CLIENT, TEST })
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { UmLiveTestConfig.class, UmClientConfig.class, CommonTestConfig.class }, loader = AnnotationConfigContextLoader.class)
-public class RoleSimpleLiveTest {
+public abstract class GenericSimpleLiveTest<T extends INameableDto> {
 
     private final static String JSON = MediaType.APPLICATION_JSON.toString();
 
     @Autowired
-    private RoleSimpleApiClient api;
+    private GenericSimpleApiClient<T> api;
 
     // find - one
 
@@ -137,7 +136,7 @@ public class RoleSimpleLiveTest {
     // create
 
     @Test
-    public final void whenResourceIsCreated_then201IsReceived() {
+    public void whenResourceIsCreated_then201IsReceived() {
         // When
         final Response response = getApi().createAsResponse(createNewResource());
 
@@ -147,7 +146,7 @@ public class RoleSimpleLiveTest {
 
     @Test
     public final void givenResourceHasNameWithSpace_whenResourceIsCreated_then201IsReceived() {
-        final Role newResource = createNewResource();
+        final T newResource = createNewResource();
         newResource.setName(randomAlphabetic(4) + " " + randomAlphabetic(4));
 
         // When
@@ -159,7 +158,7 @@ public class RoleSimpleLiveTest {
 
     @Test
     public final void whenResourceIsCreatedWithNewAssociation_then409IsReceived() {
-        final Role newResource = createNewResource();
+        final T newResource = createNewResource();
         getAssociations(newResource).add(createNewAssociationResource());
 
         // When
@@ -173,7 +172,7 @@ public class RoleSimpleLiveTest {
     public final void whenResourceIsCreatedWithInvalidAssociation_then409IsReceived() {
         final Privilege invalidAssociation = createNewAssociationResource();
         invalidAssociation.setName(null);
-        final Role newResource = createNewResource();
+        final T newResource = createNewResource();
         getAssociations(newResource).add(invalidAssociation);
 
         // When
@@ -194,7 +193,7 @@ public class RoleSimpleLiveTest {
 
     @Test
     public final void whenResourceIsCreatedWithNonNullId_then409IsReceived() {
-        final Role resourceWithId = createNewResource();
+        final T resourceWithId = createNewResource();
         resourceWithId.setId(5l);
 
         // When
@@ -216,7 +215,7 @@ public class RoleSimpleLiveTest {
     @Test
     public final void givenResourceExsits_whenResourceWithSameAttributeIsCreated_then409IsReceived() {
         // Given
-        final Role newEntity = createNewResource();
+        final T newEntity = createNewResource();
         getApi().createAsResponse(newEntity);
 
         // when
@@ -231,7 +230,7 @@ public class RoleSimpleLiveTest {
     @Test
     public final void givenResourceExists_whenResourceIsUpdated_then200IsReceived() {
         // Given
-        final Role existingResource = getApi().create(createNewResource());
+        final T existingResource = getApi().create(createNewResource());
 
         // When
         final Response response = getApi().updateAsResponse(existingResource);
@@ -243,7 +242,7 @@ public class RoleSimpleLiveTest {
     @Test
     public final void givenInvalidResource_whenResourceIsUpdated_then400BadRequestIsReceived() {
         // Given
-        final Role existingResource = getApi().create(createNewResource());
+        final T existingResource = getApi().create(createNewResource());
         existingResource.setName(null);
 
         // When
@@ -274,7 +273,7 @@ public class RoleSimpleLiveTest {
     @Test
     public final void givenResourceDoesNotExist_whenResourceIsUpdated_then404IsReceived() {
         // Given
-        final Role unpersistedResource = createNewResource();
+        final T unpersistedResource = createNewResource();
         unpersistedResource.setId(IDUtil.randomPositiveLong());
 
         // When
@@ -349,20 +348,12 @@ public class RoleSimpleLiveTest {
         return getApi().getUri() + WebConstants.PATH_SEP;
     }
 
-    private final RoleSimpleApiClient getApi() {
-        return api;
-    }
+    protected abstract GenericSimpleApiClient<T> getApi();
 
-    private final Privilege createNewAssociationResource() {
-        return new Privilege(randomAlphabetic(8));
-    }
+    protected abstract T createNewResource();
 
-    private Collection<Privilege> getAssociations(Role resource) {
-        return resource.getPrivileges();
-    }
+    protected abstract <A extends IDto> Collection<A> getAssociations(T resource);
 
-    private final Role createNewResource() {
-        return new Role(randomAlphabetic(8), Sets.<Privilege> newHashSet());
-    }
+    protected abstract <A extends IDto> A createNewAssociationResource();
 
 }
