@@ -53,8 +53,9 @@ public class RoleContractLiveTest {
         return api;
     }
 
-    private final Role createNewResource() {
-        return new Role(randomAlphabetic(8), Sets.<Privilege> newHashSet());
+    private final String createNewResource() {
+       final Role role = new Role(randomAlphabetic(8), Sets.<Privilege> newHashSet());
+       return getApi().getMarshaller().encode(role);
     }
 
 }
