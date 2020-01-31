@@ -7,8 +7,12 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertNotNull;
 
+import com.baeldung.common.interfaces.INameableDto;
+import com.google.common.io.CharStreams;
 import java.io.IOException;
 
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,34 +31,36 @@ import com.baeldung.um.spring.UmLiveTestConfig;
 import com.google.common.collect.Sets;
 import io.restassured.response.Response;
 
-@ActiveProfiles({ CLIENT, TEST })
+@ActiveProfiles({CLIENT, TEST})
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { UmLiveTestConfig.class, UmClientConfig.class, CommonTestConfig.class }, loader = AnnotationConfigContextLoader.class)
+@ContextConfiguration(classes = {UmLiveTestConfig.class, UmClientConfig.class,
+    CommonTestConfig.class}, loader = AnnotationConfigContextLoader.class)
 public class RoleContractLiveTest {
 
-    @Autowired
-    private RoleSimpleApiClientNoBase api;
+  @Autowired
+  private RoleSimpleApiClientNoBase api;
 
-    // create
+  // create
 
-    @Test
-    public final void whenResourceIsCreated_then201IsReceived() throws IOException {
-        // When
-        final Response response = getApi().createAsResponse(createNewResource());
+  @Test
+  public final void whenResourceIsCreated_then201IsReceived() throws IOException {
+    // When
+    final Response response = getApi().createAsResponse(createNewResource());
 
-        // Then
-        assertThat(response.getStatusCode(), is(201));
-        assertNotNull(response.getHeader(HttpHeaders.LOCATION));
-    }
+    // Then
+    assertThat(response.getStatusCode(), is(201));
+    assertNotNull(response.getHeader(HttpHeaders.LOCATION));
+  }
 
-    // UTIL
+  // UTIL
 
-    private final RoleSimpleApiClientNoBase getApi() {
-        return api;
-    }
+  private final RoleSimpleApiClientNoBase getApi() {
+    return api;
+  }
 
-    private final String createNewResource() {
-       return "{\"id\":null,\"name\":\"" + randomAlphabetic(8) + "\",\"privileges\":[]}";
-    }
+  private final String createNewResource() throws IOException {
+    final InputStream resourceAsStream = getClass().getResourceAsStream("/data/role_json_01.json");
+    return CharStreams.toString(new InputStreamReader(resourceAsStream));
+  }
 
 }
