@@ -7,10 +7,17 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertNotNull;
 
-import com.baeldung.common.interfaces.INameableDto;
+import com.baeldung.um.client.template.RoleSimpleApiClientNoBase;
+import com.baeldung.um.spring.CommonTestConfig;
+import com.baeldung.um.spring.UmClientConfig;
+import com.baeldung.um.spring.UmLiveTestConfig;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.io.CharStreams;
+import io.restassured.response.Response;
 import java.io.IOException;
-
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import org.junit.Test;
@@ -21,15 +28,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.AnnotationConfigContextLoader;
-
-import com.baeldung.um.client.template.RoleSimpleApiClientNoBase;
-import com.baeldung.um.persistence.model.Privilege;
-import com.baeldung.um.persistence.model.Role;
-import com.baeldung.um.spring.CommonTestConfig;
-import com.baeldung.um.spring.UmClientConfig;
-import com.baeldung.um.spring.UmLiveTestConfig;
-import com.google.common.collect.Sets;
-import io.restassured.response.Response;
 
 @ActiveProfiles({CLIENT, TEST})
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -60,7 +58,9 @@ public class RoleContractLiveTest {
 
   private final String createNewResource() throws IOException {
     final InputStream resourceAsStream = getClass().getResourceAsStream("/data/role_json_01.json");
-    return CharStreams.toString(new InputStreamReader(resourceAsStream));
+    final JsonNode rootNode = new ObjectMapper().readTree(resourceAsStream);
+    ((ObjectNode)rootNode).set("name", JsonNodeFactory.instance.textNode(randomAlphabetic(8)));
+    return rootNode.toString();
   }
 
 }
